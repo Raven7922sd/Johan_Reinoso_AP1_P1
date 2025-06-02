@@ -1,5 +1,82 @@
-﻿<h3>Index</h3>
+﻿@page "/Registro"
+
+<PageTitle>Registro</PageTitle>
+
+<div class="container">
+	<div class="card shadow-lg">
+		<div class="card-header position-relative text-center">
+			<h4 class="card-title">Consulta de</h4>
+		</div>
+
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-5">
+				<h5 class="card-title mb-0">Filtros de B&uacute;squeda</h5>
+				<a href="/Registro/Create" class="btn btn-success">
+					<span class="bi bi-plus-square"></span> Crear
+				</a>
+			</div>
+
+			<div class="row g-3 align-items-end mb-4">
+
+				<div class="col-md-3">
+					<label class="form-label"><strong>Filtrar por</strong></label>
+					<InputSelect class="form-select" @bind-Value="Filtro">
+						<option value="" disabled selected>Seleccione una opci&oacute;n</option>
+						<option value=""></option>
+						<option value=""></option>
+						<option value=""></option>
+					</InputSelect>
+				</div>
+
+				<div class="col-md-3">
+					<label class="form-label"><strong>Desde</strong></label>
+					<div class="input-group">
+						<span class="input-group-text bi bi-calendar-date"></span>
+						<input type="date" @bind="FechaDesde" class="form-control" />
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<label class="form-label"><strong>Hasta</strong></label>
+					<div class="input-group">
+						<span class="input-group-text bi bi-calendar-date-fill"></span>
+						<input type="date" @bind="FechaHasta" class="form-control" />
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<label class="form-label"><strong>Buscador</strong></label>
+					<div class="input-group">
+						<input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+						<button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+			<div class="container mt-4 d-flex justify-content-end gap-3">
+				<label class="form-label mb-0">
+					<strong>Conteo:</strong>
+					<input type="text" class="form-control" value="@Conteo" readonly />
+				</label>
+				<label class="form-label mb-0">
+					<strong>Total:</strong>
+					<input type="text" class="form-control" value="@Total" readonly />
+				</label>
+			</div>
+	</div>
+</div>
 
 @code {
+	public string Filtro { get; set; } = string.Empty;
+	public string ValorFiltro { get; set; } = string.Empty;
+	public DateTime FechaDesde { get; set; } = DateTime.Now;
+	public DateTime FechaHasta { get; set; } = DateTime.Now;
+	public int Conteo { get; set; } = 0;
+	public decimal Total { get; set; } = 0;
 
+
+	public async Task Buscar() { }
 }
