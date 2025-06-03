@@ -1,5 +1,7 @@
 using Blazored.Toast;
 using Johan_Reinoso_AP1_P1.Components;
+using Johan_Reinoso_AP1_P1.Components.DAL;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddBlazoredToast();
+
+var conStr = builder.Configuration.GetConnectionString("SqlServerConStr");
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(conStr));
 
 var app = builder.Build();
 
