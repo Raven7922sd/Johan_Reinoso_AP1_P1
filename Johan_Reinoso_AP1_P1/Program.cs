@@ -1,3 +1,4 @@
+using Blazored.Toast;
 using Johan_Reinoso_AP1_P1.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddBlazoredToast();
 
 var app = builder.Build();
 
