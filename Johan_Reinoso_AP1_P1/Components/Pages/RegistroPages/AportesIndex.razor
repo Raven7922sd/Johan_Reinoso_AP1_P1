@@ -1,11 +1,14 @@
-﻿@page "/Registro"
+﻿@page "/Aportes/Index"
+@inject AportesServices Aportesservices
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <PageTitle>Registro</PageTitle>
 
 <div class="container">
 	<div class="card shadow-lg">
 		<div class="card-header position-relative text-center">
-			<h4 class="card-title">Consulta de</h4>
+			<h4 class="card-title">Consulta de Aportes</h4>
 		</div>
 
 		<div class="card-body">
@@ -22,9 +25,9 @@
 					<label class="form-label"><strong>Filtrar por</strong></label>
 					<InputSelect class="form-select" @bind-Value="Filtro">
 						<option value="" disabled selected>Seleccione una opci&oacute;n</option>
-						<option value=""></option>
-						<option value=""></option>
-						<option value=""></option>
+						<option value="AporteId">Id</option>
+						<option value="Nombre">Nombre</option>
+						<option value="Monto">Monto</option>
 					</InputSelect>
 				</div>
 
@@ -54,30 +57,80 @@
 						<input type="date" @bind="FechaHasta" class="form-control" />
 					</div>
 				</div>
-
 			</div>
-			
+		</div>
+		<div class="table-responsive mt-5">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Aporte Id</th>
+						<th>Nombre</th>
+						<th>Monto</th>
+						<th>Fecha</th>
+						<th>Editar</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var aportes in ListaAportes)
+					{
+						<tr>
+							<td>@aportes.AporteId</td>
+							<td>@aportes.Nombres</td>
+							<td>@aportes.Monto.ToString("N2")</td>
+							<td>@aportes.Fecha.ToString("dd/MM/yyyy")</td>
+							<td><a href="/Aportes/Edit/@aportes.AporteId" class="btn btn-outline-primary bi bi-pencil-square"></a></td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
 		</div>
 			<div class="container mt-4 d-flex justify-content-between align-items-end">
 				<label class="form-label">
 					<strong>Conteo:</strong>
-					<input type="text" class="form-control" value="" readonly />
+					<input type="text" class="form-control" value="@ListaAportes.Count" readonly />
 				</label>
 
 			<label class="form-label">
 				<strong>Total:</strong>
-				<input type="text" class="form-control" value="" readonly /></label>
+				<input type="text" class="form-control" value="@ListaAportes.Sum(m=>m.Monto)" readonly /></label>
 			</div>
 	</div>
 </div>
 
 @code {
+	public List<Aportes> ListaAportes { get; set; } = new List<Aportes>();
 	public string Filtro { get; set; } = string.Empty;
 	public string ValorFiltro { get; set; } = string.Empty;
-	public DateTime FechaDesde { get; set; } = DateTime.Now;
-	public DateTime FechaHasta { get; set; } = DateTime.Now;
+	public DateTime? FechaDesde { get; set; }
+	public DateTime? FechaHasta { get; set; }
 
+	protected override async Task OnInitializedAsync()
+	{
+		ListaAportes = await Aportesservices.Listar(a => a.AporteId > 0);
+		FechaDesde = null;
+		FechaHasta = null;
+	}
 
+	public async Task Buscar()
+	{
+		DateTime? fechaHastaAjustada = FechaHasta?.Date.AddDays(1).AddTicks(-1);
+		ListaAportes = await Aportesservices.BuscarFiltradosAsync(Filtro, ValorFiltro, FechaDesde, fechaHastaAjustada);
+	}
 
-	public async Task Buscar() { }
+	private async Task FiltroCambiado(ChangeEventArgs e)
+	{
+		ValorFiltro = e.Value?.ToString() ?? string.Empty;
+
+		if (string.IsNullOrWhiteSpace(ValorFiltro))
+		{
+			ListaAportes = await Aportesservices.Listar(p => true);
+		}
+		else
+		{
+			await Buscar();
+		}
+		StateHasChanged();
+	}
 }
+			
