@@ -1,5 +1,71 @@
-﻿<h3>Index</h3>
+﻿@page "/Aportes/Create"
+@inject AportesServices aportesservice
+@inject NavigationManager navigationmanager
+@inject IToastService itoastservice
+@rendermode InteractiveServer
+
+<PageTitle>Create</PageTitle>
+
+<EditForm Model="aportes" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header position-relative text-center">
+				<h5 class="card-title">Crear Aportes</h5>
+			</div>
+
+			<div class="card-body">
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Aportes Id</strong></label>
+					<InputNumber class="form-control" @bind-Value="aportes.AporteId" readonly></InputNumber>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Nombre del Aporte</strong></label>
+					<InputText class="form-control" @bind-Value="aportes.Nombres" placeholder="Ingrese el nombre"></InputText>
+					<ValidationMessage For="(() => aportes.Nombres)"></ValidationMessage>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Monto</strong></label>
+					<InputNumber class="form-control" @bind-Value="aportes.Monto"></InputNumber>
+					<ValidationMessage For="(() => aportes.Monto)"></ValidationMessage>
+				</div>
+			</div>
+
+			<div class="card-footer text-center ">
+				<div class="btn-group" role="group">
+					<button type="reset" class="btn btn-outline-primary bi bi-arrow-clockwise" @onclick="Nuevo"> Limpiar</button>
+					<button type="submit" class="btn btn-outline-success bi bi-floppy"> Guardar</button>
+					<a href="/Aporte/Index" class="btn btn-outline-secondary bi bi-arrow-left">Volver</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</EditForm>
 
 @code {
+	private Aportes aportes { get; set; } = new Aportes();
 
+	public void Nuevo()
+	{
+		this.aportes = new Aportes();
+	}
+
+	public async Task Guardar()
+	{
+		var guardo = await aportesservice.Guardar(this.aportes);
+		if (guardo != null)
+		{
+			itoastservice.ShowSuccess("Aporte guardado correctamente");
+			navigationmanager.NavigateTo("/Aportes/Index");
+			Nuevo();
+		}
+		else
+		{
+			itoastservice.ShowError("Error al almacenar el aporte");
+		}
+	}
 }
