@@ -19,13 +19,13 @@ public class AportesServices(IDbContextFactory<Contexto>DbFactory)
     public async Task<bool> ExisteAporteId(int aporteId)
     {
         await using var context = await DbFactory.CreateDbContextAsync();
-        return await context.Aportes.AnyAsync(p => p.AporteId == aporteId);
+        return await context.Aportes.AnyAsync(a => a.AporteId == aporteId);
     }
 
     public async Task<bool> ExisteAporteNombre(string Nombre)
     {
         await using var context = await DbFactory.CreateDbContextAsync();
-        return await context.Aportes.AnyAsync(p => p.Nombres.ToLower() == Nombre.ToLower());
+        return await context.Aportes.AnyAsync(n => n.Nombres.ToLower() == Nombre.ToLower());
     }
 
     public async Task<bool> InsertarAporte(Aportes aportes)
@@ -45,13 +45,13 @@ public class AportesServices(IDbContextFactory<Contexto>DbFactory)
     public async Task<bool> Eliminar(int aporteId)
     {
         await using var context = await DbFactory.CreateDbContextAsync();
-        return await context.Aportes.AsNoTracking().Where(p => p.AporteId == aporteId).ExecuteDeleteAsync() > 0;
+        return await context.Aportes.AsNoTracking().Where(a => a.AporteId == aporteId).ExecuteDeleteAsync() > 0;
     }
 
     public async Task<Aportes?> Buscar(int aporteId)
     {
         await using var context = await DbFactory.CreateDbContextAsync();
-        return await context.Aportes.FirstOrDefaultAsync(p => p.AporteId == aporteId);
+        return await context.Aportes.FirstOrDefaultAsync(a => a.AporteId == aporteId);
     }
 
     public async Task<List<Aportes>> Listar(Expression<Func<Aportes, bool>> criterio)
@@ -78,26 +78,26 @@ public class AportesServices(IDbContextFactory<Contexto>DbFactory)
             {
                 case "AporteId":
                     if (int.TryParse(valorFiltro, out var aporteId))
-                        query = query.Where(p => p.AporteId == aporteId);
+                        query = query.Where(a => a.AporteId == aporteId);
                     break;
 
                 case "Nombre":
-                    query = query.Where(p => p.Nombres.ToLower().Contains(valor));
+                    query = query.Where(a => a.Nombres.ToLower().Contains(valor));
                     break;
 
                 case "Monto":
                     if (double.TryParse(valorFiltro, out var monto))
-                        query = query.Where(p => p.Monto == monto);
+                        query = query.Where(m => m.Monto == monto);
                     break;
             }
         }
 
         if (fechaDesde.HasValue)
-            query = query.Where(p => p.Fecha >= fechaDesde.Value);
+            query = query.Where(f => f.Fecha >= fechaDesde.Value);
 
         if (fechaHasta.HasValue)
-            query = query.Where(p => p.Fecha <= fechaHasta.Value);
+            query = query.Where(f => f.Fecha <= fechaHasta.Value);
 
-        return await query.OrderBy(p => p.Fecha).ToListAsync();
+        return await query.OrderBy(f => f.Fecha).ToListAsync();
     }
 }
