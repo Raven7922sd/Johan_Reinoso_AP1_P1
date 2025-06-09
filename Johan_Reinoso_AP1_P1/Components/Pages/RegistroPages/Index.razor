@@ -29,6 +29,17 @@
 				</div>
 
 				<div class="col-md-3">
+					<label class="form-label"><strong>Buscador</strong></label>
+					<div class="input-group">
+						<input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+						<button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-3">
 					<label class="form-label"><strong>Desde</strong></label>
 					<div class="input-group">
 						<span class="input-group-text bi bi-calendar-date"></span>
@@ -44,27 +55,18 @@
 					</div>
 				</div>
 
-				<div class="col-md-3">
-					<label class="form-label"><strong>Buscador</strong></label>
-					<div class="input-group">
-						<input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
-						<button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
-
-					</div>
-				</div>
-
-
 			</div>
+			
 		</div>
-			<div class="container mt-4 d-flex justify-content-end gap-3">
-				<label class="form-label mb-0">
+			<div class="container mt-4 d-flex justify-content-between align-items-end">
+				<label class="form-label">
 					<strong>Conteo:</strong>
-					<input type="text" class="form-control" value="@Conteo" readonly />
+					<input type="text" class="form-control" value="" readonly />
 				</label>
-				<label class="form-label mb-0">
-					<strong>Total:</strong>
-					<input type="text" class="form-control" value="@Total" readonly />
-				</label>
+
+			<label class="form-label">
+				<strong>Total:</strong>
+				<input type="text" class="form-control" value="" readonly /></label>
 			</div>
 	</div>
 </div>
@@ -74,8 +76,7 @@
 	public string ValorFiltro { get; set; } = string.Empty;
 	public DateTime FechaDesde { get; set; } = DateTime.Now;
 	public DateTime FechaHasta { get; set; } = DateTime.Now;
-	public int Conteo { get; set; } = 0;
-	public decimal Total { get; set; } = 0;
+
 
 
 	public async Task Buscar() { }
