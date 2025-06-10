@@ -1,5 +1,134 @@
-﻿<h3>Index</h3>
+﻿@page "/Aportes/Edit/{AporteId:int}"
+@inject AportesServices AportesServices
+@inject NavigationManager navigationmanager
+@inject IToastService itoastservice
+@rendermode InteractiveServer
+
+<PageTitle>Edit</PageTitle>
+
+<EditForm Model="aportes" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Editar Aportes</h5>
+			</div>
+
+			<div class="card-body">
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Aportes Id: </strong></label>
+					<InputNumber class="form-control" @bind-Value="aportes.AporteId" readonly></InputNumber>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Nombre: </strong></label>
+					<InputText class="form-control" @bind-Value="aportes.Nombres"></InputText>
+					<ValidationMessage For="(() => aportes.Nombres)"></ValidationMessage>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"<strong>Monto: </strong></label>
+					<InputNumber class="form-control" @bind-Value="aportes.Monto"></InputNumber>
+					<ValidationMessage For="(() => aportes.Monto)"></ValidationMessage>
+				</div>
+
+			</div>
+
+			<div class="card-footer text-center">
+				<span class="btn-group" role="group">
+					<a href="/Aportes/Index" class="btn btn-outline-secondary bi bi-box-arrow-left"> Volver</a>
+					<button type="submit" class="btn btn-outline-success bi bi-floppy"> Guardar</button>
+					<a type="button" class="btn btn-outline-danger" @onclick="() => MostrarModal = true"><span class="bi bi-trash"></span>Eliminar</a>
+				</span>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+@if (MostrarModal)
+{
+	<div class="modal fade show d-block" tabindex="-1" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content shadow">
+
+
+				<div class="modal-header bg-danger text-white">
+					<h5 class="modal-title w-100 text-center">Eliminar Aporte</h5>
+					<button type="button" class="btn-close" @onclick="CerrarModal" aria-label="Cerrar"></button>
+				</div>
+
+
+				<div class="modal-body text-danger">
+					<p><strong>¿Está seguro de eliminar este aporte?</strong></p>
+
+					<h5 class="text-center text-dark"><strong>Datos del Aporte</strong></h5>
+				</div>
+
+				<div class="mb-3 ms-3">
+					<p><strong>Id: </strong>@aportes.AporteId</p>
+					<p><strong>Nombre: </strong>@aportes.Nombres</p>
+					<p><strong>Monto: </strong>@aportes.Monto.ToString("N2")</p>
+				</div>
+
+				<div class="modal-footer justify-content-center">
+					<span class="btn-group" role="group">
+						<button class="btn btn-outline-secondary bi bi-box-arrow-left" @onclick="CerrarModal"> Volver</button>
+						<button class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+}
 
 @code {
+	[Parameter]
+	public int AporteId { get; set; }
+	public List<Aportes> ListaAportes { get; set; } = new List<Aportes>();
+	public Aportes? aportes { get; set; } = new Aportes();
+	private bool MostrarModal = false;
 
+	protected override async Task OnInitializedAsync()
+	{
+		aportes = await AportesServices.Buscar(AporteId);
+	}
+
+	private void CerrarModal()
+	{
+		MostrarModal = false;
+	}
+
+	private async Task Guardar()
+	{
+		var guardo = await AportesServices.Guardar(this.aportes);
+		if (guardo != null)
+		{
+			itoastservice.ShowSuccess("Aporte modificado correctamente");
+			navigationmanager.NavigateTo("/Aportes/Index");
+		}
+		else
+		{
+			itoastservice.ShowError("Error al modificar el aporte");
+		}
+	}
+
+	private async Task Eliminar()
+	{
+		if (aportes != null)
+		{
+			var Eliminado = await AportesServices.Eliminar(aportes.AporteId);
+			if (Eliminado)
+			{
+				itoastservice.ShowSuccess("Aporte eliminado correctamente");
+				navigationmanager.NavigateTo("/Aportes/Index");
+			}
+			else
+			{
+				itoastservice.ShowError("Error al eliminar el Aporte");
+			}
+			MostrarModal = false;
+		}
+	}
 }
