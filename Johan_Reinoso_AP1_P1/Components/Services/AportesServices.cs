@@ -7,7 +7,6 @@ namespace Johan_Reinoso_AP1_P1.Components.Services;
 
 public class AportesServices(IDbContextFactory<Contexto>DbFactory)
 {
-  
    public async Task<bool> Guardar(Aportes aportes)
     {
         if (!await ExisteAporteId(aportes.AporteId))
@@ -59,7 +58,6 @@ public class AportesServices(IDbContextFactory<Contexto>DbFactory)
         await using var context = await DbFactory.CreateDbContextAsync();
         return await context.Aportes.Where(criterio).AsNoTracking().ToListAsync();
     }
-
     public async Task<List<Aportes>> BuscarFiltradosAsync(
     string filtroCampo,
     string valorFiltro,

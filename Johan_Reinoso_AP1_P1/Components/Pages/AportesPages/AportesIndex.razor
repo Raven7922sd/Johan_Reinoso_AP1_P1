@@ -34,7 +34,7 @@
 				<div class="col-md-3">
 					<label class="form-label"><strong>Buscador</strong></label>
 					<div class="input-group">
-						<input class="form-control" @bind="ValorFiltro" @oninput="FiltroCambiado" placeholder =" Buscar" />
+						<input class="form-control" @bind="ValorFiltro" @oninput="FiltroCambiado" placeholder=" Buscar" />
 						<button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
 
 					</div>
@@ -83,19 +83,19 @@
 					}
 				</tbody>
 			</table>
-
 		</div>
-			<div class="container mt-4 d-flex justify-content-between align-items-end">
-				<label class="form-label col-md-1">
-					<strong>Conteo:</strong>
-					<input type="text" class="form-control" value="@ListaAportes.Count" readonly />
-				</label>
+
+		<div class="container mt-4 d-flex justify-content-between align-items-end">
+			<label class="form-label col-md-1">
+				<strong>Conteo:</strong>
+				<input type="text" class="form-control" value="@ListaAportes.Count" readonly />
+			</label>
 
 			<label class="form-label col-md-2">
 				<strong>Total:</strong>
 				<input type="text" class="form-control" value="@ListaAportes.Sum(m => m.Monto).ToString("N2")" readonly />
 			</label>
-			</div>
+		</div>
 	</div>
 </div>
 
@@ -105,6 +105,7 @@
 	public string ValorFiltro { get; set; } = string.Empty;
 	public DateTime? FechaDesde { get; set; }
 	public DateTime? FechaHasta { get; set; }
+	private CancellationTokenSource? _cts;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -123,15 +124,26 @@
 	{
 		ValorFiltro = e.Value?.ToString() ?? string.Empty;
 
-		if (string.IsNullOrWhiteSpace(ValorFiltro))
+		_cts?.Cancel();
+		_cts = new CancellationTokenSource();
+
+		try
 		{
-			ListaAportes = await Aportesservices.Listar(p => true);
+			await Task.Delay(1500, _cts.Token);
+
+			if (string.IsNullOrWhiteSpace(ValorFiltro))
+			{
+				ListaAportes = await Aportesservices.Listar(p => true);
+			}
+			else
+			{
+				await Buscar();
+			}
+
+			StateHasChanged();
 		}
-		else
+		catch (TaskCanceledException)
 		{
-			await Buscar();
 		}
-		StateHasChanged();
 	}
 }
-			
